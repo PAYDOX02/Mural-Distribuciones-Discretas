@@ -114,12 +114,23 @@
   }
   .pill i{width:8px;height:8px;flex:none}
 
-  .team-box{
-    margin:26px auto 0;padding:16px 20px;border-radius:3px;
-    border:1.5px dashed #C9C4AE;background:#FDFCF6;
-    color:var(--ink-soft);font-size:.9rem;max-width:56ch;text-align:left;
+  .team-card{
+    margin:28px auto 0;max-width:480px;text-align:left;
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow);overflow:hidden;
   }
-  .team-box strong{color:var(--ink)}
+  .team-card .team-head{
+    padding:11px 20px;font-family:var(--f-mono);font-size:.68rem;font-weight:700;
+    letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);
+    border-bottom:1px solid var(--line);background:rgba(28,37,65,.035);
+  }
+  .team-list li{
+    display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;
+    padding:10px 20px;font-size:.86rem;border-bottom:1px solid var(--line);
+  }
+  .team-list li:last-child{border-bottom:none}
+  .team-list .tname{color:var(--ink);font-weight:600}
+  .team-list .tid{font-family:var(--f-mono);color:var(--ink-faint);font-size:.78rem;white-space:nowrap}
 
   /* ---------- strip ---------- */
   .strip{padding:8px 0 44px}
@@ -325,8 +336,14 @@
       <div class="pill"><i style="background:var(--poisson)"></i>Poisson</div>
     </div>
 
-    <div class="team-box">
-      <strong>Equipo:</strong> Hugo Raúl Marín Carrera (202501793) · Selvyn Adolfo Peinado Tepéu (202501685) · Cecilia María Alejandra Barrios Castillo (202407174) · Diego José Piox Casasola (202405843).
+    <div class="team-card">
+      <div class="team-head">Equipo</div>
+      <ul class="team-list">
+        <li><span class="tname">Hugo Raúl Marín Carrera</span><span class="tid num">202501793</span></li>
+        <li><span class="tname">Selvyn Adolfo Peinado Tepéu</span><span class="tid num">202501685</span></li>
+        <li><span class="tname">Cecilia María Alejandra Barrios Castillo</span><span class="tid num">202407174</span></li>
+        <li><span class="tname">Diego José Piox Casasola</span><span class="tid num">202405843</span></li>
+      </ul>
     </div>
   </div>
 </header>
