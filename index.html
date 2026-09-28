@@ -85,8 +85,8 @@
     border-bottom:1px solid var(--line);
   }
   .topnav .wrap{display:flex;align-items:center;gap:18px;height:56px}
-  .brand{font-family:var(--f-display);font-weight:700;font-size:1.02rem;white-space:nowrap;display:flex;align-items:center;gap:8px}
-  .brand .mark{width:9px;height:9px;background:var(--hiper);display:inline-block}
+  .brand{font-family:var(--f-display);font-weight:700;font-size:1.02rem;white-space:nowrap;display:flex;align-items:center;gap:9px}
+  .brand .mark{width:26px;height:26px;flex:none;object-fit:contain}
   .navlinks{
     display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;
     -ms-overflow-style:none;flex:1;
@@ -293,7 +293,7 @@
 
 <nav class="topnav">
   <div class="wrap">
-    <div class="brand"><span class="mark"></span>Mural Digital</div>
+    <div class="brand"><img class="mark" src="assets/usac-logo.png" alt="Escudo de la Universidad de San Carlos de Guatemala">Mural Digital</div>
     <div class="navlinks" id="navlinks">
       <a href="#inicio">Inicio</a>
       <a href="#binomial">Binomial</a>
