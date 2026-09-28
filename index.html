@@ -52,7 +52,10 @@
     line-height:1.62;
     -webkit-font-smoothing:antialiased;
     overflow-x:hidden;
+    padding-top:56px;
   }
+  /* anchors land below the fixed nav bar instead of under it */
+  header[id], section[id]{scroll-margin-top:66px}
   img,svg{display:block;max-width:100%}
   .num{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
   @media (prefers-reduced-motion: reduce){
@@ -76,8 +79,8 @@
 
   /* ---------- top nav ---------- */
   .topnav{
-    position:sticky;top:0;z-index:50;
-    background:rgba(246,244,236,.92);
+    position:fixed;top:0;left:0;right:0;z-index:50;
+    background:rgba(246,244,236,.95);
     backdrop-filter:blur(10px);
     border-bottom:1px solid var(--line);
   }
@@ -323,7 +326,7 @@
     </div>
 
     <div class="team-box">
-      <strong>Equipo:</strong> [espacio reservado — se agregarán los nombres de los integrantes].
+      <strong>Equipo:</strong> Hugo Raúl Marín Carrera (202501793) · Selvyn Adolfo Peinado Tepéu (202501685) · Cecilia María Alejandra Barrios Castillo (202407174) · Diego José Piox Casasola (202405843).
     </div>
   </div>
 </header>
