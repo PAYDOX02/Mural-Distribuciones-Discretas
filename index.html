@@ -133,7 +133,8 @@
   .team-list .tid{font-family:var(--f-mono);color:var(--ink-faint);font-size:.78rem;white-space:nowrap}
 
   /* ---------- strip ---------- */
-  .strip{padding:8px 0 64px}
+  .landing{min-height:calc(100vh - 56px);display:flex;flex-direction:column;justify-content:center}
+  .strip{padding:8px 0 40px}
   .strip-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
   .strip-card{
     background:var(--card);border:1px solid var(--line);border-radius:3px;
@@ -307,6 +308,7 @@
   </div>
 </nav>
 
+<div class="landing">
 <header class="hero" id="inicio">
   <svg class="hero-chart" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
     <g fill="none" stroke="#1C2541" stroke-width="2">
@@ -356,6 +358,7 @@
     </div>
   </div>
 </section>
+</div>
 
 <!-- ======================= 1. BINOMIAL ======================= -->
 <section class="dist" id="binomial">
