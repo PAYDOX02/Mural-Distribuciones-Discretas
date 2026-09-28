@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mural Digital · Distribuciones de Probabilidad Discreta</title>
+<meta name="description" content="Mural digital colaborativo: Binomial, Binomial Negativa, Geométrica, Hipergeométrica y Poisson. Estadística 1 — Facultad de Ingeniería, USAC.">
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='46' fill='%23F4B8C4'/%3E%3Ccircle cx='34' cy='40' r='10' fill='%23FBF8FF'/%3E%3Ccircle cx='66' cy='55' r='7' fill='%23FBF8FF'/%3E%3Ccircle cx='48' cy='68' r='5' fill='%23FBF8FF'/%3E%3C/svg%3E">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/contrib/auto-render.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.1/chart.umd.min.js"></script>
+
+<style>
+  :root{
+    --bg:#FBF8FF;
+    --bg-alt:#F4EEFC;
+    --ink:#33314A;
+    --ink-soft:#615E78;
+    --ink-faint:#8F8CA6;
+    --card:#FFFFFF;
+    --line:#E8E2F5;
+
+    --binomial:#5E92BF;   --binomial-soft:#E6F0F9;  --binomial-deep:#3E6E96;
+    --binneg:#8A6FC9;     --binneg-soft:#EFE9FB;    --binneg-deep:#6B4FA8;
+    --geo:#4FA080;        --geo-soft:#E4F5EC;       --geo-deep:#357D61;
+    --hiper:#D98A3D;      --hiper-soft:#FBEEDD;     --hiper-deep:#B36A22;
+    --poisson:#C7597B;    --poisson-soft:#FBE9F0;   --poisson-deep:#A03B5B;
+
+    --f-display:'Fraunces', Georgia, serif;
+    --f-body:'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+
+    --radius:20px;
+    --shadow: 0 14px 40px -18px rgba(60,50,100,.28);
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth;overflow-x:hidden}
+  body{
+    font-family:var(--f-body);
+    color:var(--ink);
+    background:
+      radial-gradient(1100px 620px at 90% -8%, #FCEFF7 0%, transparent 60%),
+      radial-gradient(900px 560px at -10% 8%, #EAF3FB 0%, transparent 55%),
+      var(--bg);
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  img,svg{display:block;max-width:100%}
+  .num{font-variant-numeric:tabular-nums}
+
+  .wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+  h1,h2,h3,h4{font-family:var(--f-display);font-weight:600;letter-spacing:-.01em;color:var(--ink)}
+  .eyebrow{
+    font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--ink-faint);
+  }
+  a{color:inherit}
+  ul{list-style:none}
+
+  /* ---------- top nav ---------- */
+  .topnav{
+    position:sticky;top:0;z-index:50;
+    background:rgba(251,248,255,.86);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .topnav .wrap{display:flex;align-items:center;gap:18px;height:58px}
+  .brand{font-family:var(--f-display);font-weight:700;font-size:1.02rem;white-space:nowrap}
+  .brand span{color:var(--poisson)}
+  .navlinks{
+    display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;
+    -ms-overflow-style:none;flex:1;
+  }
+  .navlinks::-webkit-scrollbar{display:none}
+  .navlinks a{
+    white-space:nowrap;font-size:.84rem;font-weight:600;color:var(--ink-soft);
+    padding:8px 12px;border-radius:999px;transition:.18s;
+  }
+  .navlinks a:hover{background:var(--bg-alt);color:var(--ink)}
+
+  /* ---------- hero ---------- */
+  .hero{padding:64px 0 46px;position:relative}
+  .hero .eyebrow{margin-bottom:14px}
+  .hero h1{font-size:clamp(2.1rem,4.6vw,3.3rem);line-height:1.08;max-width:16ch}
+  .hero p.lead{margin-top:18px;max-width:62ch;color:var(--ink-soft);font-size:1.05rem}
+  .hero-meta{
+    margin-top:30px;display:flex;flex-wrap:wrap;gap:12px;
+  }
+  .pill{
+    display:flex;align-items:center;gap:8px;
+    background:var(--card);border:1px solid var(--line);
+    padding:9px 16px;border-radius:999px;font-size:.82rem;font-weight:600;color:var(--ink-soft);
+    box-shadow:var(--shadow);
+  }
+  .pill i{width:8px;height:8px;border-radius:50%;background:var(--binomial);flex:none}
+
+  .team-box{
+    margin-top:26px;padding:18px 22px;border-radius:16px;
+    border:1.5px dashed #D8CFEE;background:#FDFCFF;
+    color:var(--ink-soft);font-size:.9rem;max-width:56ch;
+  }
+  .team-box strong{color:var(--ink)}
+
+  /* ---------- required-set strip ---------- */
+  .strip{padding:8px 0 44px}
+  .strip-grid{
+    display:grid;grid-template-columns:repeat(5,1fr);gap:12px;
+  }
+  .strip-card{
+    background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:14px 12px;text-align:center;box-shadow:var(--shadow);
+    transition:transform .18s;
+  }
+  .strip-card:hover{transform:translateY(-3px)}
+  .strip-card .n{font-family:var(--f-display);font-size:1.3rem;font-weight:700}
+  .strip-card .t{font-size:.76rem;font-weight:700;margin-top:2px;color:var(--ink-soft)}
+  .strip-card:nth-child(1){border-top:3px solid var(--binomial)}
+  .strip-card:nth-child(2){border-top:3px solid var(--binneg)}
+  .strip-card:nth-child(3){border-top:3px solid var(--geo)}
+  .strip-card:nth-child(4){border-top:3px solid var(--hiper)}
+  .strip-card:nth-child(5){border-top:3px solid var(--poisson)}
+
+  /* ---------- distribution sections ---------- */
+  .dist{padding:70px 0}
+  .dist:nth-of-type(even){background:var(--bg-alt)}
+  .dist-head{display:flex;align-items:center;gap:18px;margin-bottom:8px}
+  .badge{
+    width:56px;height:56px;border-radius:50%;flex:none;
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--f-display);font-weight:700;font-size:1.4rem;color:#fff;
+  }
+  .dist-head h2{font-size:clamp(1.5rem,3vw,2rem)}
+  .dist-tagline{color:var(--ink-soft);font-size:.95rem;margin-top:2px}
+
+  .dist-lede{margin:22px 0 32px;max-width:76ch;font-size:1.02rem;color:var(--ink-soft)}
+  .dist-lede b{color:var(--ink)}
+
+  .grid2{display:grid;grid-template-columns:1.05fr .95fr;gap:34px;align-items:start}
+  .grid2 > div{min-width:0}
+
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:24px 26px;box-shadow:var(--shadow);
+  }
+  .card + .card{margin-top:18px}
+  .card h4{font-size:.98rem;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+  .card h4 .dot{width:7px;height:7px;border-radius:50%}
+  .card ul{display:flex;flex-direction:column;gap:8px}
+  .card li{font-size:.92rem;color:var(--ink-soft);padding-left:16px;position:relative}
+  .card li::before{content:"";position:absolute;left:0;top:9px;width:5px;height:5px;border-radius:50%}
+
+  .formula-box{
+    padding:18px 20px;border-radius:14px;background:var(--bg-alt);
+    overflow-x:auto;margin:6px 0 4px;
+  }
+  .formula-box .katex{font-size:1.08rem}
+  .def-row{display:flex;gap:10px;font-size:.88rem;color:var(--ink-soft);margin-top:4px}
+  .def-row b{color:var(--ink);min-width:26px;font-family:var(--f-display)}
+
+  .stat-pair{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .stat-pill{
+    background:var(--bg-alt);border-radius:12px;padding:12px 14px;text-align:center;
+    min-width:0;overflow-x:auto;
+  }
+  .stat-pill .lbl{font-size:.72rem;font-weight:700;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.06em}
+  .stat-pill .val{font-family:var(--f-display);font-size:1.15rem;margin-top:4px}
+
+  .example-card{border-radius:var(--radius);padding:24px 26px;color:#fff;box-shadow:var(--shadow)}
+  .example-card h4{color:#fff;opacity:.92;font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:10px}
+  .example-card p{font-size:.94rem;opacity:.97}
+  .example-result{
+    margin-top:16px;background:rgba(255,255,255,.16);border-radius:12px;padding:14px 16px;
+    display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .example-result .k{font-size:.78rem;opacity:.85}
+  .example-result .v{font-family:var(--f-display);font-size:1.35rem;font-weight:700}
+
+  .chart-card{margin-top:18px}
+  .chart-card canvas{max-height:190px}
+  .chart-caption{font-size:.78rem;color:var(--ink-faint);margin-top:10px;text-align:center}
+
+  .video-card{margin-top:18px}
+  .video-card .ratio{position:relative;padding-top:56.25%;border-radius:14px;overflow:hidden}
+  .video-card iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+  .video-meta{display:flex;justify-content:space-between;margin-top:10px;font-size:.78rem;color:var(--ink-faint)}
+
+  @media (max-width: 900px){
+    .grid2{grid-template-columns:1fr}
+    .strip-grid{grid-template-columns:repeat(2,1fr)}
+  }
+
+  /* ---------- comparativa ---------- */
+  .compare{padding:74px 0}
+  .compare h2{font-size:clamp(1.6rem,3.2vw,2.1rem);margin-bottom:10px}
+  .compare .lede{color:var(--ink-soft);max-width:70ch;margin-bottom:38px}
+
+  .table-wrap{overflow-x:auto;border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--line)}
+  table{border-collapse:collapse;width:100%;min-width:900px;background:var(--card)}
+  thead th{
+    text-align:left;font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;
+    color:var(--ink-faint);padding:16px 18px;border-bottom:1px solid var(--line);
+    background:var(--bg-alt);
+  }
+  tbody td{padding:16px 18px;font-size:.87rem;color:var(--ink-soft);border-bottom:1px solid var(--line);vertical-align:top}
+  tbody tr:last-child td{border-bottom:none}
+  tbody td:first-child{font-weight:700;color:var(--ink);white-space:nowrap}
+  tbody td .katex{font-size:.92rem}
+
+  .decision{margin-top:50px}
+  .decision h3{font-size:1.2rem;margin-bottom:6px}
+  .decision p.lede{color:var(--ink-soft);margin-bottom:26px;font-size:.94rem}
+  .flow{display:flex;flex-direction:column;gap:0}
+  .flow-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+  .flow-box{
+    background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;
+    box-shadow:var(--shadow);font-size:.86rem;color:var(--ink-soft);position:relative;
+  }
+  .flow-box .q{font-weight:700;color:var(--ink);font-size:.88rem;margin-bottom:6px}
+  .flow-box.answer{color:#fff;font-weight:700;display:flex;align-items:center;font-size:.92rem}
+  .flow-arrow{
+    text-align:center;color:var(--ink-faint);font-size:1.1rem;padding:6px 0;
+  }
+  @media (max-width:820px){
+    .flow-row{grid-template-columns:1fr}
+  }
+
+  /* ---------- sources ---------- */
+  .sources{padding:70px 0 40px;background:var(--bg-alt)}
+  .sources h2{font-size:1.5rem;margin-bottom:8px}
+  .sources p.lede{color:var(--ink-soft);margin-bottom:28px;max-width:70ch}
+  .src-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+  .src-col h4{font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-faint);margin-bottom:12px}
+  .src-col ol{list-style:decimal;padding-left:20px;display:flex;flex-direction:column;gap:12px}
+  .src-col li{font-size:.87rem;color:var(--ink-soft)}
+  .src-col li a{color:var(--binomial-deep);font-weight:600;text-decoration:underline}
+  @media (max-width:820px){.src-grid{grid-template-columns:1fr}}
+
+  .access-note{
+    margin-top:34px;padding:16px 20px;border-radius:14px;background:#fff;border:1px solid var(--line);
+    font-size:.84rem;color:var(--ink-soft);display:flex;gap:12px;align-items:flex-start;
+  }
+  .access-note b{color:var(--ink)}
+
+  footer{padding:34px 0 50px;text-align:center;color:var(--ink-faint);font-size:.8rem}
+  footer a{text-decoration:underline}
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="wrap">
+    <div class="brand">Mural<span>·</span>Digital</div>
+    <div class="navlinks">
+      <a href="#inicio">Inicio</a>
+      <a href="#binomial">Binomial</a>
+      <a href="#binneg">Bin. Negativa</a>
+      <a href="#geometrica">Geométrica</a>
+      <a href="#hipergeometrica">Hipergeométrica</a>
+      <a href="#poisson">Poisson</a>
+      <a href="#comparativa">Comparativa</a>
+      <a href="#fuentes">Fuentes</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero" id="inicio">
+  <div class="wrap">
+    <div class="eyebrow">Estadística 1 · Facultad de Ingeniería, USAC</div>
+    <h1>Mural digital: distribuciones de probabilidad discreta</h1>
+    <p class="lead">Un recorrido claro y aplicado por cinco distribuciones discretas — qué representan, cuándo usarlas, sus fórmulas y un ejemplo de ingeniería resuelto para cada una — pensado para explicarse en menos de 3 minutos.</p>
+
+    <div class="hero-meta">
+      <div class="pill"><i style="background:var(--binomial)"></i>Binomial</div>
+      <div class="pill"><i style="background:var(--binneg)"></i>Binomial Negativa</div>
+      <div class="pill"><i style="background:var(--geo)"></i>Geométrica</div>
+      <div class="pill"><i style="background:var(--hiper)"></i>Hipergeométrica</div>
+      <div class="pill"><i style="background:var(--poisson)"></i>Poisson</div>
+    </div>
+
+    <div class="team-box">
+      <strong>Equipo:</strong> [espacio reservado — se agregarán los nombres de los integrantes].
+    </div>
+  </div>
+</header>
+
+<section class="strip">
+  <div class="wrap">
+    <div class="strip-grid">
+      <div class="strip-card"><div class="n">01</div><div class="t">Binomial</div></div>
+      <div class="strip-card"><div class="n">02</div><div class="t">Bin. Negativa</div></div>
+      <div class="strip-card"><div class="n">03</div><div class="t">Geométrica</div></div>
+      <div class="strip-card"><div class="n">04</div><div class="t">Hipergeométrica</div></div>
+      <div class="strip-card"><div class="n">05</div><div class="t">Poisson</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= 1. BINOMIAL ======================= -->
+<section class="dist" id="binomial">
+  <div class="wrap">
+    <div class="dist-head">
+      <div class="badge" style="background:var(--binomial)">1</div>
+      <div>
+        <h2>Distribución Binomial</h2>
+        <div class="dist-tagline">Número de éxitos en un número fijo de ensayos independientes</div>
+      </div>
+    </div>
+
+    <p class="dist-lede">La <b>binomial</b> modela cuántos <b>éxitos</b> ocurren cuando repetimos <b>n</b> veces un mismo experimento con solo dos resultados posibles (éxito o fracaso), y la probabilidad de éxito no cambia de un ensayo a otro.</p>
+
+    <div class="grid2">
+      <div>
+        <div class="card">
+          <h4><span class="dot" style="background:var(--binomial)"></span>Condiciones</h4>
+          <ul>
+            <li style="--c:1">Se realizan <b>n</b> ensayos idénticos, fijados de antemano.</li>
+            <li>Cada ensayo tiene solo dos resultados: éxito o fracaso.</li>
+            <li>La probabilidad de éxito <span class="katex-inline">p</span> es constante en todos los ensayos.</li>
+            <li>Los ensayos son independientes entre sí.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h4><span class="dot" style="background:var(--binomial)"></span>Variable aleatoria y parámetros</h4>
+          <div class="def-row"><b>X</b> número de éxitos observados en los n ensayos.</div>
+          <div class="def-row"><b>n</b> número de ensayos.</div>
+          <div class="def-row"><b>p</b> probabilidad de éxito en un ensayo.</div>
+        </div>
+
+        <div class="card">
+          <h4><span class="dot" style="background:var(--binomial)"></span>Función de probabilidad</h4>
+          <div class="formula-box eq" data-eq="f(x)=\binom{n}{x}p^{x}(1-p)^{n-x},\quad x=0,1,\dots,n"></div>
+          <div class="stat-pair">
+            <div class="stat-pill"><div class="lbl">Media</div><div class="val eq" data-eq="\mu=np"></div></div>
+            <div class="stat-pill"><div class="lbl">Desv. estándar</div><div class="val eq" data-eq="\sigma=\sqrt{np(1-p)}"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="example-card" style="background:linear-gradient(160deg,var(--binomial),var(--binomial-deep))">
+          <h4>Ejemplo aplicado — Control de calidad electrónico</h4>
+          <p>En una línea de ensamblaje de placas de circuito impreso (PCB), el <b>4%</b> de las placas presenta un defecto de soldadura (<span class="eqw" data-eq="p=0.04"></span>). Se inspecciona un lote de <b>15 placas</b> (<span class="eqw" data-eq="n=15"></span>). ¿Cuál es la probabilidad de que <b>exactamente 2</b> tengan el defecto?</p>
+          <div class="example-result">
+            <div>
+              <div class="k">f(x = 2)</div>
+              <div class="v num" id="bin-answer">—</div>
+            </div>
+            <div>
+              <div class="k">μ = np</div>
+              <div class="v num" id="bin-mean">—</div>
+            </div>
+            <div>
+              <div class="k">σ</div>
+              <div class="v num" id="bin-sd">—</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card chart-card">
+          <h4><span class="dot" style="background:var(--binomial)"></span>f(x) para B(n=15, p=0.04)</h4>
+          <canvas id="chart-binomial"></canvas>
+          <div class="chart-caption">Probabilidad de obtener x placas defectuosas en el lote de 15.</div>
+        </div>
+
+        <div class="card video-card">
+          <h4><span class="dot" style="background:var(--binomial)"></span>Video (2:31 min)</h4>
+          <div class="ratio">
+            <iframe src="https://www.youtube.com/embed/ROZDp1CxXRc" title="Distribución de Probabilidad Binomial" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          </div>
+          <div class="video-meta"><span>êstadígrafo</span><span>youtube.com</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= 2. BINOMIAL NEGATIVA ======================= -->
+<section class="dist" id="binneg">
+  <div class="wrap">
+    <div class="dist-head">
+      <div class="badge" style="background:var(--binneg)">2</div>
+      <div>
+        <h2>Distribución Binomial Negativa</h2>
+        <div class="dist-tagline">Ensayos necesarios para alcanzar el k-ésimo éxito</div>
+      </div>
+    </div>
+
+    <p class="dist-lede">Aquí el número de <b>éxitos (k)</b> se fija de antemano y lo que es aleatorio es <b>cuántos ensayos</b> hacen falta para lograrlos. Es lo opuesto a la binomial: en vez de fijar n, fijamos k.</p>
+
+    <div class="grid2">
+      <div>
+        <div class="card">
+          <h4><span class="dot" style="background:var(--binneg)"></span>Condiciones</h4>
+          <ul>
+            <li>Ensayos idénticos con dos resultados posibles: éxito o fracaso.</li>
+            <li>La probabilidad de éxito p es constante y los ensayos son independientes.</li>
+            <li>El experimento continúa hasta lograr el <b>k-ésimo</b> éxito (k es un entero positivo fijo).</li>
+            <li>A diferencia de la binomial, el número de éxitos es fijo y el número de ensayos es la variable aleatoria.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h4><span class="dot" style="background:var(--binneg)"></span>Variable aleatoria y parámetros</h4>
+          <div class="def-row"><b>X</b> número de ensayos realizados hasta obtener el k-ésimo éxito.</div>
+          <div class="def-row"><b>k</b> número de éxitos que se buscan.</div>
+          <div class="def-row"><b>p</b> probabilidad de éxito en un ensayo.</div>
+        </div>
+
+        <div class="card">
+          <h4><span class="dot" style="background:var(--binneg)"></span>Función de probabilidad</h4>
+          <div class="formula-box eq" data-eq="f(x)=\binom{x-1}{k-1}p^{k}(1-p)^{x-k},\quad x=k,k+1,\dots"></div>
+          <div class="stat-pair">
+            <div class="stat-pill"><div class="lbl">Media</div><div class="val eq" data-eq="\mu=\dfrac{k}{p}"></div></div>
+            <div class="stat-pill"><div class="lbl">Desv. estándar</div><div class="val eq" data-eq="\sigma=\sqrt{\dfrac{k(1-p)}{p^{2}}}"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="example-card" style="background:linear-gradient(160deg,var(--binneg),var(--binneg-deep))">
+          <h4>Ejemplo aplicado — Mantenimiento de sensores IoT</h4>
+          <p>Un equipo de mantenimiento revisa, uno por uno, los sensores de temperatura de una red industrial. Cada sensor tiene probabilidad <span class="eqw" data-eq="p=0.10"></span> de estar fallando. El equipo necesita encontrar <b>3 sensores defectuosos</b> (<span class="eqw" data-eq="k=3"></span>) para analizarlos y hallar la causa común de la falla. ¿Cuál es la probabilidad de tener que revisar <b>exactamente 20 sensores</b> (<span class="eqw" data-eq="x=20"></span>) para lograrlo?</p>
+          <div class="example-result">
+            <div>
+              <div class="k">f(x = 20)</div>
+              <div class="v num" id="nb-answer">—</div>
+            </div>
+            <div>
+              <div class="k">μ = k/p</div>
+              <div class="v num" id="nb-mean">—</div>
+            </div>
+            <div>
+              <div class="k">σ</div>
+              <div class="v num" id="nb-sd">—</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card chart-card">
+          <h4><span class="dot" style="background:var(--binneg)"></span>f(x) para nb(k=3, p=0.10)</h4>
+          <canvas id="chart-binneg"></canvas>
+          <div class="chart-caption">Probabilidad de necesitar x revisiones para hallar 3 sensores defectuosos.</div>
+        </div>
+
+        <div class="card video-card">
+          <h4><span class="dot" style="background:var(--binneg)"></span>Video (4:29 min)</h4>
+          <div class="ratio">
+            <iframe src="https://www.youtube.com/embed/LgNSqHil6w0" title="Ejemplo de Distribución Binomial Negativa" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          </div>
+          <div class="video-meta"><span>YouTube</span><span>youtube.com</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= 3. GEOMÉTRICA ======================= -->
+<section class="dist" id="geometrica">
+  <div class="wrap">
+    <div class="dist-head">
+      <div class="badge" style="background:var(--geo)">3</div>
+      <div>
+        <h2>Distribución Geométrica</h2>
+        <div class="dist-tagline">Ensayos necesarios hasta el primer éxito</div>
+      </div>
+    </div>
+
+    <p class="dist-lede">Es el caso particular de la binomial negativa cuando <b>k = 1</b>: solo nos interesa cuántos ensayos toma conseguir el <b>primer</b> éxito.</p>
+
+    <div class="grid2">
+      <div>
+        <div class="card">
+          <h4><span class="dot" style="background:var(--geo)"></span>Condiciones</h4>
+          <ul>
+            <li>Ensayos idénticos con dos resultados posibles: éxito o fracaso.</li>
+            <li>La probabilidad de éxito p es constante y los ensayos son independientes.</li>
+            <li>El experimento continúa hasta que se obtiene el <b>primer</b> éxito.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h4><span class="dot" style="background:var(--geo)"></span>Variable aleatoria y parámetros</h4>
+          <div class="def-row"><b>X</b> número de ensayos realizados hasta el primer éxito.</div>
+          <div class="def-row"><b>p</b> probabilidad de éxito en un ensayo.</div>
+        </div>
+
+        <div class="card">
+          <h4><span class="dot" style="background:var(--geo)"></span>Función de probabilidad</h4>
+          <div class="formula-box eq" data-eq="f(x)=p(1-p)^{x-1},\quad x=1,2,3,\dots"></div>
+          <div class="stat-pair">
+            <div class="stat-pill"><div class="lbl">Media</div><div class="val eq" data-eq="\mu=\dfrac{1}{p}"></div></div>
+            <div class="stat-pill"><div class="lbl">Desv. estándar</div><div class="val eq" data-eq="\sigma=\sqrt{\dfrac{1-p}{p^{2}}}"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="example-card" style="background:linear-gradient(160deg,var(--geo),var(--geo-deep))">
+          <h4>Ejemplo aplicado — Pruebas de estrés en microchips</h4>
+          <p>En una planta de manufactura de microchips, cada unidad sometida a una prueba de estrés térmico tiene probabilidad <span class="eqw" data-eq="p=0.15"></span> de fallar. Las unidades se prueban una por una. ¿Cuál es la probabilidad de que la primera unidad defectuosa aparezca <b>justo en la quinta prueba</b> (<span class="eqw" data-eq="x=5"></span>)?</p>
+          <div class="example-result">
+            <div>
+              <div class="k">f(x = 5)</div>
+              <div class="v num" id="geo-answer">—</div>
+            </div>
+            <div>
+              <div class="k">μ = 1/p</div>
+              <div class="v num" id="geo-mean">—</div>
+            </div>
+            <div>
+              <div class="k">σ</div>
+              <div class="v num" id="geo-sd">—</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card chart-card">
+          <h4><span class="dot" style="background:var(--geo)"></span>f(x) para G(p=0.15)</h4>
+          <canvas id="chart-geo"></canvas>
+          <div class="chart-caption">Probabilidad de que la primera unidad defectuosa aparezca en la prueba x.</div>
+        </div>
+
+        <div class="card video-card">
+          <h4><span class="dot" style="background:var(--geo)"></span>Video (4:04 min)</h4>
+          <div class="ratio">
+            <iframe src="https://www.youtube.com/embed/EDqYfs5U0WA" title="Probabilidad | Distribución geométrica" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          </div>
+          <div class="video-meta"><span>YouTube</span><span>youtube.com</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= 4. HIPERGEOMÉTRICA ======================= -->
+<section class="dist" id="hipergeometrica">
+  <div class="wrap">
+    <div class="dist-head">
+      <div class="badge" style="background:var(--hiper)">4</div>
+      <div>
+        <h2>Distribución Hipergeométrica</h2>
+        <div class="dist-tagline">Éxitos en una muestra sin reemplazo de una población finita</div>
+      </div>
+    </div>
+
+    <p class="dist-lede">Se parece a la binomial, pero la muestra se toma <b>sin reemplazo</b> de una población <b>finita</b>: por eso los ensayos ya no son independientes y las probabilidades cambian en cada extracción.</p>
+
+    <div class="grid2">
+      <div>
+        <div class="card">
+          <h4><span class="dot" style="background:var(--hiper)"></span>Condiciones</h4>
+          <ul>
+            <li>La población es finita, de tamaño <b>N</b>.</li>
+            <li>De esos N elementos, <b>k</b> se consideran "éxito" y el resto "fracaso".</li>
+            <li>Se elige una muestra de tamaño <b>n</b>, sin reemplazo.</li>
+            <li>Los ensayos son dependientes: la probabilidad varía en cada extracción.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h4><span class="dot" style="background:var(--hiper)"></span>Variable aleatoria y parámetros</h4>
+          <div class="def-row"><b>X</b> número de éxitos en la muestra de tamaño n.</div>
+          <div class="def-row"><b>N</b> tamaño de la población.</div>
+          <div class="def-row"><b>n</b> tamaño de la muestra.</div>
+          <div class="def-row"><b>k</b> número de éxitos en la población.</div>
+        </div>
+
+        <div class="card">
+          <h4><span class="dot" style="background:var(--hiper)"></span>Función de probabilidad</h4>
+          <div class="formula-box eq" data-eq="f(x)=\dfrac{\binom{k}{x}\binom{N-k}{n-x}}{\binom{N}{n}}"></div>
+          <div class="stat-pair">
+            <div class="stat-pill"><div class="lbl">Media</div><div class="val eq" data-eq="\mu=n\dfrac{k}{N}"></div></div>
+            <div class="stat-pill"><div class="lbl">Desv. estándar</div><div class="val eq" data-eq="\sigma=\sqrt{n\frac{k}{N}\left(1-\frac{k}{N}\right)\frac{N-n}{N-1}}"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="example-card" style="background:linear-gradient(160deg,var(--hiper),var(--hiper-deep))">
+          <h4>Ejemplo aplicado — Repuestos de telecomunicaciones</h4>
+          <p>Una bodega de repuestos para torres de telecomunicaciones tiene <b>40 antenas</b> en inventario (<span class="eqw" data-eq="N=40"></span>); <b>6</b> de ellas tienen un defecto de fábrica no visible a simple vista (<span class="eqw" data-eq="k=6"></span>). Un técnico selecciona al azar, sin reemplazo, <b>5 antenas</b> (<span class="eqw" data-eq="n=5"></span>) para instalarlas. ¿Cuál es la probabilidad de que <b>exactamente 1</b> sea defectuosa?</p>
+          <div class="example-result">
+            <div>
+              <div class="k">f(x = 1)</div>
+              <div class="v num" id="hg-answer">—</div>
+            </div>
+            <div>
+              <div class="k">μ = n·k/N</div>
+              <div class="v num" id="hg-mean">—</div>
+            </div>
+            <div>
+              <div class="k">σ</div>
+              <div class="v num" id="hg-sd">—</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card chart-card">
+          <h4><span class="dot" style="background:var(--hiper)"></span>f(x) para h(N=40, n=5, k=6)</h4>
+          <canvas id="chart-hiper"></canvas>
+          <div class="chart-caption">Probabilidad de obtener x antenas defectuosas en la muestra de 5.</div>
+        </div>
+
+        <div class="card video-card">
+          <h4><span class="dot" style="background:var(--hiper)"></span>Video (2:39 min)</h4>
+          <div class="ratio">
+            <iframe src="https://www.youtube.com/embed/XXzYgWRnhh4" title="Distribución hipergeométrica | Ejemplo 1" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          </div>
+          <div class="video-meta"><span>YouTube</span><span>youtube.com</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= 5. POISSON ======================= -->
+<section class="dist" id="poisson">
+  <div class="wrap">
+    <div class="dist-head">
+      <div class="badge" style="background:var(--poisson)">5</div>
+      <div>
+        <h2>Distribución de Poisson</h2>
+        <div class="dist-tagline">Ocurrencias de un evento en un intervalo de tiempo o espacio</div>
+      </div>
+    </div>
+
+    <p class="dist-lede">Distribución elegida por el equipo. A diferencia de las anteriores, aquí no hay "ensayos": se cuenta directamente cuántas veces ocurre un evento en un intervalo fijo de tiempo o espacio.</p>
+
+    <div class="grid2">
+      <div>
+        <div class="card">
+          <h4><span class="dot" style="background:var(--poisson)"></span>Condiciones</h4>
+          <ul>
+            <li>La probabilidad de ocurrencia es la misma para cualquier par de intervalos de igual longitud.</li>
+            <li>La ocurrencia (o no) en un intervalo es independiente de lo que pase en otro intervalo.</li>
+            <li>Los eventos ocurren a una tasa media constante en el intervalo.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h4><span class="dot" style="background:var(--poisson)"></span>Variable aleatoria y parámetro</h4>
+          <div class="def-row"><b>X</b> número de ocurrencias del evento en el intervalo.</div>
+          <div class="def-row"><b>μ</b> número medio de ocurrencias en el intervalo (también se denota λ).</div>
+        </div>
+
+        <div class="card">
+          <h4><span class="dot" style="background:var(--poisson)"></span>Función de probabilidad</h4>
+          <div class="formula-box eq" data-eq="f(x)=\dfrac{\mu^{x}e^{-\mu}}{x!},\quad x=0,1,2,\dots"></div>
+          <div class="stat-pair">
+            <div class="stat-pill"><div class="lbl">Media</div><div class="val eq" data-eq="\mu"></div></div>
+            <div class="stat-pill"><div class="lbl">Desv. estándar</div><div class="val eq" data-eq="\sigma=\sqrt{\mu}"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="example-card" style="background:linear-gradient(160deg,var(--poisson),var(--poisson-deep))">
+          <h4>Ejemplo aplicado — Fallos de disco en un centro de datos</h4>
+          <p>Un centro de datos registra, en promedio, <b>2.4 fallos de disco duro por semana</b> en su clúster de servidores (<span class="eqw" data-eq="\mu=2.4"></span>). ¿Cuál es la probabilidad de que en una semana determinada ocurran <b>exactamente 4 fallos</b> (<span class="eqw" data-eq="x=4"></span>)?</p>
+          <div class="example-result">
+            <div>
+              <div class="k">f(x = 4)</div>
+              <div class="v num" id="po-answer">—</div>
+            </div>
+            <div>
+              <div class="k">μ</div>
+              <div class="v num" id="po-mean">—</div>
+            </div>
+            <div>
+              <div class="k">σ</div>
+              <div class="v num" id="po-sd">—</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card chart-card">
+          <h4><span class="dot" style="background:var(--poisson)"></span>f(x) para Poisson(μ=2.4)</h4>
+          <canvas id="chart-poisson"></canvas>
+          <div class="chart-caption">Probabilidad de que ocurran x fallos de disco en la semana.</div>
+        </div>
+
+        <div class="card video-card">
+          <h4><span class="dot" style="background:var(--poisson)"></span>Video (3:42 min)</h4>
+          <div class="ratio">
+            <iframe src="https://www.youtube.com/embed/Q7H3p0oCJrE" title="Distribución de Poisson — video explicativo introductorio" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          </div>
+          <div class="video-meta"><span>YouTube</span><span>youtube.com</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= COMPARATIVA ======================= -->
+<section class="compare" id="comparativa">
+  <div class="wrap">
+    <div class="eyebrow">Semejanzas y diferencias</div>
+    <h2>¿Cuál distribución usar?</h2>
+    <p class="lede">Las cinco distribuciones comparten la idea de "éxito/fracaso" o "conteo de ocurrencias", pero se diferencian en <b>qué se fija</b> (número de ensayos o número de éxitos), <b>si hay reemplazo</b> y <b>si existe un número de ensayos como tal</b>.</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Distribución</th>
+            <th>¿Qué mide X?</th>
+            <th>Parámetros</th>
+            <th>¿Qué es fijo?</th>
+            <th>Independencia</th>
+            <th>Fórmula</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Binomial</td>
+            <td>Éxitos en n ensayos.</td>
+            <td>n, p</td>
+            <td>Número de ensayos (n).</td>
+            <td>Ensayos independientes.</td>
+            <td class="eq" data-eq="\binom{n}{x}p^{x}(1-p)^{n-x}"></td>
+          </tr>
+          <tr>
+            <td>Binomial Negativa</td>
+            <td>Ensayos hasta el k-ésimo éxito.</td>
+            <td>k, p</td>
+            <td>Número de éxitos buscados (k).</td>
+            <td>Ensayos independientes.</td>
+            <td class="eq" data-eq="\binom{x-1}{k-1}p^{k}(1-p)^{x-k}"></td>
+          </tr>
+          <tr>
+            <td>Geométrica</td>
+            <td>Ensayos hasta el primer éxito.</td>
+            <td>p</td>
+            <td>Éxitos buscados = 1 (caso k=1 de la anterior).</td>
+            <td>Ensayos independientes.</td>
+            <td class="eq" data-eq="p(1-p)^{x-1}"></td>
+          </tr>
+          <tr>
+            <td>Hipergeométrica</td>
+            <td>Éxitos en una muestra de tamaño n.</td>
+            <td>N, n, k</td>
+            <td>Número de ensayos (n), de una población finita N.</td>
+            <td>Ensayos dependientes (sin reemplazo).</td>
+            <td class="eq" data-eq="\tfrac{\binom{k}{x}\binom{N-k}{n-x}}{\binom{N}{n}}"></td>
+          </tr>
+          <tr>
+            <td>Poisson</td>
+            <td>Ocurrencias en un intervalo de tiempo/espacio.</td>
+            <td>μ</td>
+            <td>La tasa media μ del intervalo (no hay "n ensayos").</td>
+            <td>Ocurrencias en intervalos disjuntos independientes.</td>
+            <td class="eq" data-eq="\tfrac{\mu^{x}e^{-\mu}}{x!}"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="decision">
+      <h3>Guía rápida de decisión</h3>
+      <p class="lede">Tres preguntas para elegir la distribución correcta frente a un problema nuevo:</p>
+
+      <div class="flow">
+        <div class="flow-row">
+          <div class="flow-box">
+            <div class="q">1. ¿Estás contando eventos en un intervalo de tiempo o espacio, sin un número fijo de "ensayos"?</div>
+            Ej: fallos por semana, llamadas por hora, defectos por metro cuadrado.
+          </div>
+          <div class="flow-box answer" style="background:var(--poisson)">Sí → Poisson</div>
+          <div class="flow-box">No → sigue a la pregunta 2.</div>
+        </div>
+        <div class="flow-arrow">▾</div>
+        <div class="flow-row">
+          <div class="flow-box">
+            <div class="q">2. ¿Se extrae una muestra sin reemplazo de una población finita conocida (N)?</div>
+            Ej: piezas defectuosas dentro de un lote específico ya existente.
+          </div>
+          <div class="flow-box answer" style="background:var(--hiper)">Sí → Hipergeométrica</div>
+          <div class="flow-box">No → sigue a la pregunta 3.</div>
+        </div>
+        <div class="flow-arrow">▾</div>
+        <div class="flow-row">
+          <div class="flow-box">
+            <div class="q">3. ¿El número de ensayos n está fijo de antemano, o repites hasta lograr k éxitos?</div>
+            Con n fijo, cuentas éxitos. Repitiendo hasta lograr k éxitos, cuentas ensayos.
+          </div>
+          <div class="flow-box answer" style="background:var(--binomial)">n fijo → Binomial</div>
+          <div class="flow-box answer" style="background:var(--binneg)">Hasta k éxitos (k=1) → Geométrica · (k&gt;1) → Bin. Negativa</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= FUENTES ======================= -->
+<section class="sources" id="fuentes">
+  <div class="wrap">
+    <div class="eyebrow">Redacción y originalidad</div>
+    <h2>Fuentes consultadas</h2>
+    <p class="lede">Definiciones y fórmulas verificadas contra la bibliografía del curso; los ejemplos aplicados de ingeniería fueron elaborados por el equipo para este mural.</p>
+
+    <div class="src-grid">
+      <div class="src-col">
+        <h4>Bibliografía principal</h4>
+        <ol>
+          <li>Devore, J. L. (2012). <i>Probabilidad y Estadística para Ingeniería y Ciencias</i> (8.ª ed.). Cengage Learning.</li>
+          <li>Aguilar, M. E. <i>Manual de Estadística Descriptiva</i>. Facultad de Ingeniería, USAC. <a href="https://uedi.ingenieria.usac.edu.gt/campus/mod/resource/view.php?id=354514" target="_blank" rel="noopener">Ver recurso ↗</a></li>
+          <li>Material de curso: Contreras, C. <i>Distribuciones de Probabilidad Discreta</i>. Estadística 1, USAC.</li>
+        </ol>
+      </div>
+      <div class="src-col">
+        <h4>Bibliografía complementaria</h4>
+        <ol>
+          <li>Anderson, Sweeney &amp; Williams (2008). <i>Estadística para Administración y Economía</i> (10.ª ed.). Cengage Learning.</li>
+          <li>Gaitán, M. G. (2015). <i>Probabilidad, conceptos básicos</i> (4.ª ed.).</li>
+          <li>Johnson &amp; Kuby (2008). <i>Estadística elemental</i> (10.ª ed.). Cengage Learning.</li>
+          <li>Mendenhall, Beaver &amp; Beaver (2006). <i>Introducción a la Probabilidad y Estadística</i>. Cengage Learning.</li>
+          <li>Walpole, Myers, Myers &amp; Ye (2007). <i>Probabilidad y Estadística para Ingenieros</i> (8.ª ed.). Pearson.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="access-note">
+      <span>&#9432;</span>
+      <div><b>Nota de accesibilidad:</b> esta página es pública, no requiere inicio de sesión ni permisos especiales, y todos los videos se reproducen directamente aquí (no es necesario salir del mural para verlos).</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  Mural digital · Estadística 1 · Facultad de Ingeniería, USAC — Universidad de San Carlos de Guatemala.
+</footer>
+
+<script>
+/* ---------- math rendering ---------- */
+document.addEventListener('DOMContentLoaded', function(){
+  document.querySelectorAll('.eq').forEach(function(el){
+    try{
+      katex.render(el.getAttribute('data-eq'), el, {throwOnError:false, displayMode: el.classList.contains('formula-box')});
+    }catch(e){}
+  });
+  document.querySelectorAll('.eqw').forEach(function(el){
+    try{ katex.render(el.getAttribute('data-eq'), el, {throwOnError:false}); }catch(e){}
+  });
+});
+
+/* ---------- probability engine ---------- */
+function comb(n,k){
+  if(k<0||k>n) return 0;
+  k=Math.min(k,n-k);
+  let r=1;
+  for(let i=0;i<k;i++){ r = r*(n-i)/(i+1); }
+  return r;
+}
+function factorial(x){ let r=1; for(let i=2;i<=x;i++) r*=i; return r; }
+
+function binomPMF(n,p,x){ return comb(n,x)*Math.pow(p,x)*Math.pow(1-p,n-x); }
+function negBinomPMF(x,k,p){ if(x<k) return 0; return comb(x-1,k-1)*Math.pow(p,k)*Math.pow(1-p,x-k); }
+function geomPMF(x,p){ if(x<1) return 0; return p*Math.pow(1-p,x-1); }
+function hyperPMF(N,n,k,x){ return comb(k,x)*comb(N-k,n-x)/comb(N,n); }
+function poissonPMF(mu,x){ return Math.pow(mu,x)*Math.exp(-mu)/factorial(x); }
+
+function pct(v){ return (v*100).toFixed(2)+' %'; }
+function dec(v,d){ return v.toFixed(d===undefined?4:d); }
+function setText(id,val){ const el=document.getElementById(id); if(el) el.textContent = val; }
+
+/* ---------- worked examples ---------- */
+(function(){
+  // Binomial n=15, p=0.04, x=2
+  const bn=15, bp=0.04, bx=2;
+  const bAns = binomPMF(bn,bp,bx);
+  setText('bin-answer', dec(bAns) + '  (' + pct(bAns) + ')');
+  setText('bin-mean', dec(bn*bp,2));
+  setText('bin-sd', dec(Math.sqrt(bn*bp*(1-bp)),3));
+
+  // Binomial negativa k=3, p=0.10, x=20
+  const nk=3, np_=0.10, nx=20;
+  const nAns = negBinomPMF(nx,nk,np_);
+  setText('nb-answer', dec(nAns) + '  (' + pct(nAns) + ')');
+  setText('nb-mean', dec(nk/np_,1));
+  setText('nb-sd', dec(Math.sqrt(nk*(1-np_)/(np_*np_)),2));
+
+  // Geométrica p=0.15, x=5
+  const gp=0.15, gx=5;
+  const gAns = geomPMF(gx,gp);
+  setText('geo-answer', dec(gAns) + '  (' + pct(gAns) + ')');
+  setText('geo-mean', dec(1/gp,2));
+  setText('geo-sd', dec(Math.sqrt((1-gp)/(gp*gp)),2));
+
+  // Hipergeométrica N=40, n=5, k=6, x=1
+  const hN=40, hn=5, hk=6, hx=1;
+  const hAns = hyperPMF(hN,hn,hk,hx);
+  setText('hg-answer', dec(hAns) + '  (' + pct(hAns) + ')');
+  setText('hg-mean', dec(hn*hk/hN,2));
+  setText('hg-sd', dec(Math.sqrt(hn*(hk/hN)*(1-hk/hN)*((hN-hn)/(hN-1))),3));
+
+  // Poisson mu=2.4, x=4
+  const pmu=2.4, px=4;
+  const pAns = poissonPMF(pmu,px);
+  setText('po-answer', dec(pAns) + '  (' + pct(pAns) + ')');
+  setText('po-mean', dec(pmu,1));
+  setText('po-sd', dec(Math.sqrt(pmu),3));
+})();
+
+/* ---------- charts ---------- */
+Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
+Chart.defaults.font.size = 11;
+
+function makeBarChart(canvasId, labels, data, color){
+  const ctx = document.getElementById(canvasId);
+  if(!ctx) return;
+  new Chart(ctx, {
+    type:'bar',
+    data:{ labels: labels, datasets:[{ data: data, backgroundColor: color, borderRadius:5, maxBarThickness: 26 }] },
+    options:{
+      responsive:true,
+      plugins:{ legend:{display:false}, tooltip:{ callbacks:{ label: c => 'f(x) = '+c.parsed.y.toFixed(4) } } },
+      scales:{
+        x:{ grid:{display:false}, ticks:{ maxRotation:0, autoSkip:true, maxTicksLimit: 12 } },
+        y:{ beginAtZero:true, grid:{color:'#EEE7FA'}, ticks:{ callback:v=>v.toFixed(2) } }
+      }
+    }
+  });
+}
+
+window.addEventListener('load', function(){
+  // Binomial chart
+  {
+    const n=15,p=0.04; const labels=[],data=[];
+    for(let x=0;x<=8;x++){ labels.push(x); data.push(binomPMF(n,p,x)); }
+    makeBarChart('chart-binomial', labels, data, '#5E92BF');
+  }
+  // Binomial negativa chart
+  {
+    const k=3,p=0.10; const labels=[],data=[];
+    for(let x=3;x<=70;x+=2){ labels.push(x); data.push(negBinomPMF(x,k,p)); }
+    makeBarChart('chart-binneg', labels, data, '#8A6FC9');
+  }
+  // Geométrica chart
+  {
+    const p=0.15; const labels=[],data=[];
+    for(let x=1;x<=28;x++){ labels.push(x); data.push(geomPMF(x,p)); }
+    makeBarChart('chart-geo', labels, data, '#4FA080');
+  }
+  // Hipergeométrica chart
+  {
+    const N=40,n=5,k=6; const labels=[],data=[];
+    for(let x=0;x<=5;x++){ labels.push(x); data.push(hyperPMF(N,n,k,x)); }
+    makeBarChart('chart-hiper', labels, data, '#D98A3D');
+  }
+  // Poisson chart
+  {
+    const mu=2.4; const labels=[],data=[];
+    for(let x=0;x<=10;x++){ labels.push(x); data.push(poissonPMF(mu,x)); }
+    makeBarChart('chart-poisson', labels, data, '#C7597B');
+  }
+});
+</script>
+</body>
+</html>
